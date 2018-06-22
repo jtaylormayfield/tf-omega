@@ -42,3 +42,24 @@ module "rds" {
   username       = "${var.rds_username}"
   password       = "${var.rds_password}"
 }
+
+module "sns" {
+  source           = "./sns"
+  billing_lambda   = "${module.lambda.email_lambda_arn}"
+  autoscale_lambda = "${module.lambda.email_lambda_arn}"
+}
+
+module "lambda" {
+  source          = "./lambda"
+  email_bucket    = "${var.lambda_bucket}"
+  email_path      = "${var.email_lambda_path}"
+  email_version   = "${var.email_lambda_version}"
+  email_handler   = "${var.email_lambda_handler}"
+  email_runtime   = "${var.email_lambda_runtime}"
+  email_username  = "${var.email_username}"
+  email_password  = "${var.email_password}"
+  email_smtp_host = "${var.email_smtp_host}"
+  email_smtp_port = "${var.email_smtp_port}"
+  email_from      = "${var.email_from}"
+  email_to        = "${var.email_to}"
+}

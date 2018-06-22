@@ -27,3 +27,17 @@ variable "rds_class" {}
 variable "rds_db_name" {}
 variable "rds_username" {}
 variable "rds_password" {}
+
+#Lambda
+variable "lambda_bucket" {}
+
+variable "email_lambda_path" {}
+variable "email_lambda_version" {}
+variable "email_lambda_handler" {}
+variable "email_lambda_runtime" {}
+variable "email_username" {}
+variable "email_password" {}
+variable "email_smtp_host" {}
+variable "email_smtp_port" {}
+variable "email_from" {}
+variable "email_to" {}
