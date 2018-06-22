@@ -18,6 +18,10 @@ resource "aws_iam_role" "email_lambda" {
 EOF
 }
 
+resource "aws_cloudwatch_log_group" "email" {
+  name = "/aws/lambda/email"
+}
+
 data "aws_s3_bucket_object" "email_lambda" {
   bucket = "${var.email_bucket}"
   key    = "${var.email_path}"

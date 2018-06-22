@@ -17,3 +17,19 @@ resource "aws_sns_topic_subscription" "autoscale" {
   protocol  = "lambda"
   endpoint  = "${var.autoscale_lambda}"
 }
+
+resource "aws_lambda_permission" "billing" {
+  statement_id  = "AllowExecutionFromBillingSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.billing_lambda}"
+  principal     = "sns.amazonaws.com"
+  source_arn    = "${aws_sns_topic.billing.arn}"
+}
+
+resource "aws_lambda_permission" "autoscale" {
+  statement_id  = "AllowExecutionFromAutoscaleSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = "${var.autoscale_lambda}"
+  principal     = "sns.amazonaws.com"
+  source_arn    = "${aws_sns_topic.autoscale.arn}"
+}
