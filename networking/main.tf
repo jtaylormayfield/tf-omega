@@ -76,23 +76,23 @@ resource "aws_default_security_group" "default_sg" {
   vpc_id = "${aws_vpc.vpc.id}"
 
   ingress {
-    protocol  = 6
-    self      = true
-    from_port = 80
-    to_port   = 80
+    protocol    = 6
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    protocol  = 6
-    self      = true
-    from_port = 22
-    to_port   = 22
+    protocol    = 6
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    protocol  = -1
-    self      = true
-    from_port = 0
-    to_port   = 0
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

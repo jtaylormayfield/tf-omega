@@ -19,10 +19,11 @@ module "networking" {
   num_public_subnets  = "${var.public_subnets}"
 }
 
-module "compute"{
-  source = "./compute"
-  project_name = "${var.project_name}"
-  instance_type = "${var.instance_type}"
-  default_sg_id = "${module.networking.default_sg_id}"
+module "compute" {
+  source          = "./compute"
+  project_name    = "${var.project_name}"
+  instance_type   = "${var.instance_type}"
+  default_sg_id   = "${module.networking.default_sg_id}"
   public_key_path = "${var.public_key_path}"
+  subnet          = "${module.networking.public_subnet_ids[0]}"
 }
