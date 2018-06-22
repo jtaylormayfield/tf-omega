@@ -27,3 +27,18 @@ module "compute" {
   public_key_path = "${var.public_key_path}"
   subnet          = "${module.networking.public_subnet_ids[0]}"
 }
+
+module "rds" {
+  source         = "./rds"
+  project_name   = "${var.project_name}"
+  subnet_ids     = ["${module.networking.private_subnet_ids}"]
+  sg_ids         = ["${module.networking.db_sg_id}"]
+  storage_gb     = "${var.rds_storage_gb}"
+  storage_type   = "${var.rds_storage_type}"
+  engine         = "${var.rds_engine}"
+  engine_version = "${var.rds_engine_version}"
+  class          = "${var.rds_class}"
+  name           = "${var.rds_db_name}"
+  username       = "${var.rds_username}"
+  password       = "${var.rds_password}"
+}
