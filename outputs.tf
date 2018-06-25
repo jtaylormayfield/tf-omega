@@ -1,3 +1,3 @@
-output "Public IP" {
-  value = "${module.compute.public_ip}"
+output "Public DNS" {
+  value = "${module.dns.fqdn}"
 }

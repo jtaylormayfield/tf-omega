@@ -4,6 +4,11 @@ provider "aws" {
   region     = "us-east-2"
 }
 
+provider "cloudflare" {
+  email = "${var.cloudflare_email}"
+  token = "${var.cloudflare_token}"
+}
+
 module "storage" {
   source       = "./storage"
   project_name = "${var.project_name}"
@@ -20,12 +25,18 @@ module "networking" {
 }
 
 module "compute" {
-  source          = "./compute"
-  project_name    = "${var.project_name}"
-  instance_type   = "${var.instance_type}"
-  default_sg_id   = "${module.networking.default_sg_id}"
-  public_key_path = "${var.public_key_path}"
-  subnet          = "${module.networking.public_subnet_ids[0]}"
+  source                    = "./compute"
+  project_name              = "${var.project_name}"
+  instance_type             = "${var.instance_type}"
+  default_sg_id             = "${module.networking.default_sg_id}"
+  public_key_path           = "${var.public_key_path}"
+  subnet_ids                = "${module.networking.public_subnet_ids}"
+  max_elb_pool              = "${var.max_instances}"
+  min_elb_pool              = "${var.min_instances}"
+  health_check_grace_period = "${var.instance_health_check_grace_seconds}"
+  load_balancers            = ["${module.elb.default_lb}"]
+  wait_for_elb_capacity     = "${var.wait_for_instance_capacity}"
+  autoscale_topic_arn       = "${module.sns.autoscale_arn}"
 }
 
 module "rds" {
@@ -62,4 +73,36 @@ module "lambda" {
   email_smtp_port = "${var.email_smtp_port}"
   email_from      = "${var.email_from}"
   email_to        = "${var.email_to}"
+}
+
+module "cloudwatch" {
+  source          = "./cloudwatch"
+  project_name    = "${var.project_name}"
+  region_name     = "us-east-2"
+  billing_sns_arn = "${module.sns.billing_arn}"
+}
+
+module "elb" {
+  source            = "./elb"
+  project_name      = "${var.project_name}"
+  security_groups   = ["${module.networking.default_sg_id}"]
+  subnets           = ["${module.networking.public_subnet_ids}"]
+  log_bucket        = "${module.storage.bucket_id}"
+  log_bucket_prefix = "${var.lb_log_bucket_prefix}"
+  log_interval      = "${var.lb_log_interval}"
+  instance_port     = "80"
+  instance_protocol = "http"
+  lb_port           = "${var.lb_port}"
+  lb_protocol       = "${var.lb_protocol}"
+  healthy_checks    = "${var.lb_num_healthy_checks}"
+  unhealthy_checks  = "${var.lb_num_unhealthy_checks}"
+  timeout           = "${var.lb_timeout}"
+  interval          = "${var.lb_interval}"
+}
+
+module "dns" {
+  source          = "./dns"
+  domain          = "${var.domain_name}"
+  name            = "${var.project_name}"
+  default_lb_name = "${module.elb.public_dns}"
 }
